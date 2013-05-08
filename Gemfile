@@ -1,5 +1,6 @@
 source "https://rubygems.org"
 
+gem 'rake'
 gem 'sequel'
 gem 'pg'
 gem 'sqlite3'
