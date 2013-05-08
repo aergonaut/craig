@@ -1,0 +1,12 @@
+GEM
+  remote: https://rubygems.org/
+  specs:
+    nokogiri (1.5.9)
+    sequel (3.47.0)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  nokogiri
+  sequel
