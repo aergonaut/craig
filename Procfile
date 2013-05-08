@@ -1,2 +1,1 @@
-sidekiq: bundle exec sidekiq -r ./craig_watcher.rb
-scheduler: bundle exec bin/scheduler.rb
+sidekiq: bundle exec sidekiq -r ./craig_worker.rb
