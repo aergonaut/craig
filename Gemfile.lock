@@ -4,6 +4,7 @@ GEM
     celluloid (0.14.0)
       timers (>= 1.0.0)
     connection_pool (1.0.0)
+    dotenv (0.7.0)
     multi_json (1.7.3)
     nokogiri (1.5.9)
     pg (0.15.1)
@@ -23,6 +24,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  dotenv
   nokogiri
   pg
   sequel
