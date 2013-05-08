@@ -7,11 +7,11 @@ require "dotenv"
 Dotenv.load
 
 Sidekiq.configure_client do |config|
-  config.redis = { namespace: "craig", size: 1, url: ENV["REDIS_URL"]}
+  config.redis = { namespace: "craig", size: 1, url: ENV["REDIS_URL"] }
 end
 
 Sidekiq.configure_server do |config|
-  config.redis = { namespace: "craig", url: ENV["REDIS_URL"]}
+  config.redis = { namespace: "craig", url: ENV["REDIS_URL"] }
 end
 
 class CraigWorker
@@ -20,7 +20,6 @@ class CraigWorker
   DB = Sequel.connect(ENV["DATABASE_URL"])
 
   def perform
-
     craig = Nokogiri::XML(open(ENV["CRAIGSLIST_SEARCH_URL"]))
     craig.remove_namespaces!
 
@@ -35,8 +34,6 @@ class CraigWorker
         DB[:listings] << { title: title, url: url }
         html_body << %(<a href="#{url}">#{title}</a>\n\n)
       end
-      # listing = %(<a href="#{url}">#{title}</a>\n\n)
-      # html_body << listing
     end
 
     # TODO: send email
