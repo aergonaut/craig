@@ -17,8 +17,9 @@ end
 class CraigWorker
   include Sidekiq::Worker
 
+  DB = Sequel.connect(ENV["DATABASE_URL"])
+
   def perform
-    DB = Sequel.connect(ENV["DATABASE_URL"])
 
     craig = Nokogiri::XML(open(ENV["CRAIGSLIST_SEARCH_URL"]))
     craig.remove_namespaces!
@@ -39,8 +40,8 @@ class CraigWorker
     end
 
     # TODO: send email
-    File.open("craigs.txt", "w+") do |f|
-      f << html_body
-    end
+    # File.open("craigs.txt", "w+") do |f|
+    #   f << html_body
+    # end
   end
 end
