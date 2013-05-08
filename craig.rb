@@ -2,6 +2,8 @@ require "nokogiri"
 require "open-uri"
 require "sequel"
 
+DB = Sequel.connect(ENV["DATABASE_URL"])
+
 # get the rss feed
 craig = Nokogiri::XML(open(ENV["CRAIGSLIST_SEARCH_URL"]))
 
