@@ -25,7 +25,7 @@ class CraigWorker
     @conn ||= Faraday.new url: "http://#{uri.host}" do |faraday|
       faraday.request :url_encoded
       faraday.response :logger
-      faraday.adapater :net_http
+      faraday.adapter :net_http
     end
   end
 
