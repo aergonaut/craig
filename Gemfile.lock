@@ -5,7 +5,10 @@ GEM
       timers (>= 1.0.0)
     connection_pool (1.0.0)
     dotenv (0.7.0)
+    faraday (0.8.7)
+      multipart-post (~> 1.1)
     multi_json (1.7.3)
+    multipart-post (1.2.0)
     nokogiri (1.5.9)
     pg (0.15.1)
     rake (10.0.3)
@@ -27,6 +30,7 @@ PLATFORMS
 
 DEPENDENCIES
   dotenv
+  faraday
   nokogiri
   pg
   rake

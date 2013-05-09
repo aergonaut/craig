@@ -1,8 +1,6 @@
-require "nokogiri"
-require "open-uri"
-require "sequel"
-require "sidekiq"
-require "dotenv"
+require "bundler"
+Bundler.require(:default, ENV["CRAIG_ENV"] || :development)
+require "uri"
 
 Dotenv.load
 
@@ -19,8 +17,23 @@ class CraigWorker
 
   DB = Sequel.connect(ENV["DATABASE_URL"])
 
+  def uri
+    @uri ||= URI.parse(ENV["CRAIGSLIST_SEARCH_URL"])
+  end
+
+  def conn
+    @conn ||= Faraday.new url: "http://#{uri.host}" do |faraday|
+      faraday.request :url_encoded
+      faraday.response :logger
+      faraday.adapater :net_http
+    end
+  end
+
   def perform
-    craig = Nokogiri::XML(open(ENV["CRAIGSLIST_SEARCH_URL"]))
+    response = conn.get "#{uri.path}?#{uri.query}"
+    rss = response.body
+
+    craig = Nokogiri::XML(rss)
     craig.remove_namespaces!
 
     html_body = "New postings:\n\n"
