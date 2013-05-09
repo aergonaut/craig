@@ -36,10 +36,10 @@ else # development
   Pony.options = {
     from: "craig@aergonaut.com",
     to: ENV["PONY_RECIPIENTS"],
-    subject: "craig - New listings found!"
+    subject: "craig - New listings found!",
     via: LetterOpener::DeliveryMethod,
     via_options: {
-      location: File.expand_path("./tmp/letter_opener", __FILE__)
+      location: File.expand_path("./tmp/letter_opener")
     }
   }
 end
@@ -68,7 +68,7 @@ class CraigWorker
     craig = Nokogiri::XML(rss)
     craig.remove_namespaces!
 
-    html_body = "New postings:\n\n"
+    listings = []
 
     items = craig.xpath("//item")
     items.each do |item|
@@ -77,11 +77,15 @@ class CraigWorker
 
       if DB[:listings].where(url: url).empty?
         DB[:listings] << { title: title, url: url }
-        html_body << %(<a href="#{url}">#{title}</a>\n\n)
+        listings << %(<a href="#{url}">#{title}</a>)
       end
     end
 
-    # TODO: send email
-    Pony.mail(html_body: html_body)
+    unless listings.empty?
+      html_body = listings.unshift("New listings:").join("<br /><br />")
+
+      # TODO: send email
+      Pony.mail(html_body: html_body)
+    end
   end
 end
