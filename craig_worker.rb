@@ -2,7 +2,11 @@ require "bundler"
 Bundler.require(:default, ENV["CRAIG_ENV"] || :development)
 require "uri"
 
-Dotenv.load
+unless ENV["CRAIG_ENV"]
+  ENV["CRAIG_ENV"] = "development"
+end
+
+Dotenv.load if ENV["CRAIG_ENV"] == "development"
 
 Sidekiq.configure_client do |config|
   config.redis = { namespace: "craig", size: 1, url: ENV["REDIS_URL"] }
@@ -10,6 +14,34 @@ end
 
 Sidekiq.configure_server do |config|
   config.redis = { namespace: "craig", url: ENV["REDIS_URL"] }
+end
+
+if ENV["CRAIG_ENV"] == "production"
+  Pony.options = {
+    from: "craig@aergonaut.com",
+    to: ENV["PONY_RECIPIENTS"],
+    subject: "craig - New listings found!",
+    via: :smtp,
+    via_options: {
+      address: "smtp.sendgrid.net",
+      port: "587",
+      domain: "heroku.com",
+      user_name: ENV["SENDGRID_USERNAME"],
+      password: ENV["SENDGRID_PASSWORD"],
+      authentication: :plain,
+      enable_starttls_auto: true
+    }
+  }
+else # development
+  Pony.options = {
+    from: "craig@aergonaut.com",
+    to: ENV["PONY_RECIPIENTS"],
+    subject: "craig - New listings found!"
+    via: LetterOpener::DeliveryMethod,
+    via_options: {
+      location: File.expand_path("./tmp/letter_opener", __FILE__)
+    }
+  }
 end
 
 class CraigWorker
@@ -50,8 +82,6 @@ class CraigWorker
     end
 
     # TODO: send email
-    # File.open("craigs.txt", "w+") do |f|
-    #   f << html_body
-    # end
+    Pony.mail(html_body: html_body)
   end
 end
